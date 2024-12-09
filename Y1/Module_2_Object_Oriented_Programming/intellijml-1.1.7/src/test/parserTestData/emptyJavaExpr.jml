@@ -1,0 +1,2 @@
+@ (* you cannot have an empty java expression (whitespace does not count) *)
+requires   ;

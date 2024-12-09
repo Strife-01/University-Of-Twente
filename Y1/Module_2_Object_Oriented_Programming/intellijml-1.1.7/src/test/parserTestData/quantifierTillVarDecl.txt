@@ -1,0 +1,11 @@
+JML File(0,25)
+  JMLJmlSpecificationImpl(JML specification)(0,1)
+    PsiElement(at-sign)('@')(0,1)
+  PsiElement(ensures)('ensures')(2,9)
+  PsiElement(LPARENTH)('(')(10,11)
+  PsiElement(\forall)('\forall')(11,18)
+  PsiElement(INT_KEYWORD)('int')(19,22)
+  PsiElement(IDENTIFIER)('i')(23,24)
+  PsiElement(semicolon)(';')(24,25)
+  PsiErrorElement:range condition or expression expected(25,25)
+    <empty list>

@@ -1,0 +1,17 @@
+completionTestData
+integrationTestData
+nl.utwente.jmlplugin
+nl.utwente.jmlplugin.annotator
+nl.utwente.jmlplugin.completion
+nl.utwente.jmlplugin.easteregg
+nl.utwente.jmlplugin.editor.templates
+nl.utwente.jmlplugin.lexer
+nl.utwente.jmlplugin.parser
+nl.utwente.jmlplugin.psi
+nl.utwente.jmlplugin.psi.impl
+nl.utwente.jmlplugin.runtime
+nl.utwente.jmlplugin.settings
+nl.utwente.jmlplugin.syntax_highlighting
+semanticsAnnotatorTestData
+syntaxAnnotatorTestData
+typeAnnotatorTestData

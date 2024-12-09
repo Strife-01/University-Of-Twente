@@ -1,0 +1,103 @@
+{
+  parserClass="nl.utwente.jmlplugin.parser.JMLParser"
+  parserUtilClass="nl.utwente.jmlplugin.parser.JMLJavaParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="JML"
+  psiImplClassSuffix="Impl"
+  psiPackage="nl.utwente.jmlplugin.psi"
+  psiImplPackage="nl.utwente.jmlplugin.psi.impl"
+
+  elementTypeHolderClass="nl.utwente.jmlplugin.psi.JMLTypes"
+  elementTypeClass="nl.utwente.jmlplugin.psi.JMLElementType"
+  tokenTypeClass="nl.utwente.jmlplugin.psi.JMLTokenType"
+
+  tokens = [
+    SIGNALS_ONLY = 'signals_only'
+
+    NOT_SPECIFIED = '\not_specified'
+    NOTHING = '\nothing'
+    EVERYTHING = '\everything'
+    INTO = '\into'
+
+    SPEC_PUBLIC = 'spec_public'
+    SPEC_PROTECTED = 'spec_protected'
+    LOOPINVARIANT = 'loop_invariant'
+
+    IDENT = "regexp:[_$a-zA-Z][_$a-zA-Z0-9]*"
+
+    AT_SIGN = '@'
+    SEMICOLON = ';'
+    L_PAREN = '('
+    R_PAREN = ')'
+    DOT = '.'
+    COMMA = ','
+    COLON = ':'
+    STAR = '*'
+    L_SQ_BRAC ='['
+    R_SQ_BRAC = ']'
+
+    WHITE_SPACE = 'regexp:\s+'
+
+    INFORMAL_DESCRIPTION = "regexp:\(\s*\*([^*]|\*+[^*)])+\*\s*\)"
+    REST = "regexp:[^@;().,:*\[\]\s]"
+
+  ]
+
+  name("method_spec")="method specification"
+  name("method_jml")="method specification"
+  name("store_ref_list")="list of references"
+  name("store_ref")="name"
+  name("store_ref_keyword")="\\nothing, \\everything, \\not_specified"
+  name("in_method_spec")="in-method specification"
+}
+
+// root jml element
+jml_root ::= jml_specification
+
+jml_specification ::= AT_SIGN+ ((method_jml | class_invariants | modifiers | in_method_spec) AT_SIGN*)?
+
+// specifications above methods
+method_jml ::= also? method_spec AT_SIGN* modifiers*
+method_spec ::= spec_case (AT_SIGN* also spec_case)*
+private spec_case ::= requires_clause+ spec_body? | spec_body
+spec_body ::= (AT_SIGN* (ensures_clause | signals_clause | signals_only_clause | assignable_clause))+
+
+// clauses allowed in method specifications
+requires_clause ::= AT_SIGN* (requires|pre) pred_or_not SEMICOLON+ {pin="pred_or_not"}
+ensures_clause ::= (ensures|post) pred_or_not SEMICOLON+ {pin="pred_or_not"}
+signals_clause ::= signals L_PAREN reference_type IDENT? R_PAREN pred_or_not? SEMICOLON+ {pin="pred_or_not"}
+signals_only_clause ::= SIGNALS_ONLY reference_type (COMMA reference_type)* SEMICOLON+
+assignable_clause ::= (assignable|modifiable|modifies) store_ref_list SEMICOLON+
+private pred_or_not ::= NOT_SPECIFIED | java_expr
+
+// class invariants
+private class_invariants ::= (class_invariant AT_SIGN*)+
+class_invariant ::= modifiers? invariant java_expr SEMICOLON+ {pin="java_expr"}
+
+// modifiers for methods and fields
+modifiers ::= ((SPEC_PUBLIC | SPEC_PROTECTED | pure | instance | helper | nullable | java_modifier) SEMICOLON* AT_SIGN*)+
+private java_modifier ::= public | private | protected | static
+
+// specification inside a method
+in_method_spec ::= (AT_SIGN* (loop_invariant | assert_statement | assume_statement))+
+loop_invariant ::= (maintaining | LOOPINVARIANT) java_expr SEMICOLON+ {pin="java_expr"}
+// separate because in runtime checking they have different behaviours
+assert_statement ::= assert java_expr SEMICOLON+ {pin="java_expr"}
+assume_statement ::= assume java_expr SEMICOLON+ {pin="java_expr"}
+
+
+// store refs
+private store_ref_list ::= store_ref_keyword | store_ref (COMMA store_ref)*
+store_ref_keyword ::= NOTHING | EVERYTHING | NOT_SPECIFIED
+store_ref ::= store_ref_name store_ref_name_suffix*
+private store_ref_name ::= this | super | IDENT
+private store_ref_name_suffix ::= (DOT this) | (DOT IDENT) | (DOT STAR) | (L_SQ_BRAC STAR R_SQ_BRAC)
+
+
+// java reference to an exception class
+reference_type ::= IDENT (DOT IDENT)*
+
+// java expressions
+java_expr ::= <<parseJavaExpression>>

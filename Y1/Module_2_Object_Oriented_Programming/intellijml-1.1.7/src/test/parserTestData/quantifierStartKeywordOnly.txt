@@ -1,0 +1,8 @@
+JML File(0,18)
+  JMLJmlSpecificationImpl(JML specification)(0,1)
+    PsiElement(at-sign)('@')(0,1)
+  PsiElement(ensures)('ensures')(2,9)
+  PsiElement(LPARENTH)('(')(10,11)
+  PsiElement(\forall)('\forall')(11,18)
+  PsiErrorElement:variable declaration expected(18,18)
+    <empty list>

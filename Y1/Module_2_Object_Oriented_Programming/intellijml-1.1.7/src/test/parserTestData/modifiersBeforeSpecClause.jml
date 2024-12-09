@@ -1,0 +1,7 @@
+@
+requires x > 5;
+ensures x > 10;
+ensures y > 7
+pure;;
+instance;
+modifies \everything;

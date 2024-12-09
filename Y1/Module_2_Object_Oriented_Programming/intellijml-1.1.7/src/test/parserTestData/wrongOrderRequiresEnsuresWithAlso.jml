@@ -1,0 +1,6 @@
+@
+ensures x > 10;
+ensures y > 7; also
+requires x > 5;
+requires y < 5;
+(* when using also, you have technically two spec cases *)

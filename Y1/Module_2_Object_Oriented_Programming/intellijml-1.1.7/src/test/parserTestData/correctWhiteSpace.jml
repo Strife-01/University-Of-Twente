@@ -1,0 +1,31 @@
+@requires x > 5;
+signals(IOException);
+signals   (IOException);
+signals(   IOException);
+
+signals(IOException   );
+signals(IOException)   ;
+signals(
+        IOException)
+     ;
+assignable x,y;
+assignable x, y;
+
+
+    assignable x , y;
+assignable x , y ;
+ensures
+
+           x >
+      5
+   ;
+            assignable                  x[*]        ;
+assignable x     [*];
+assignable x[     *];
+
+assignable x[*    ];
+
+
+assignable x[*]   ;
+assignable this.y;
+assignable this  .  y;

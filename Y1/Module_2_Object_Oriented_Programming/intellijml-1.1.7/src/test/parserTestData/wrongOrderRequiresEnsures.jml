@@ -1,0 +1,6 @@
+@
+ensures x > 10;
+requires x > 5;
+ensures y > 7;
+modifies \everything;
+(* should give an error because requires should come before ensures *)

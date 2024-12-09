@@ -1,0 +1,23 @@
+@
+    requires \not_specified;
+     (* test.jml that all possible method spec cases work *)
+    requires x > 5;
+    ensures \not_specified;
+    ensures x > 5;
+    signals(IOException);
+    signals(IOException exc);
+    signals(IOException) \not_specified;
+    signals(IOException) x > 5;
+
+    (*test*)
+    signals(IOException) \not_specified;
+    signals(IOException exc) exc.getMessage() == "test";
+    signals_only java.exception.Exception;
+    signals_only IO_Exception;
+    (* assignable, modifies and modifiable are synonyms *)
+    assignable \nothing;
+    modifies \everything;
+    modifiable \not_specified;
+    assignable x;
+    assignable x, y;
+    assignable x[*], this.y.*;

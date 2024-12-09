@@ -1,0 +1,3 @@
+@
+ensures
+ensures b != 0;

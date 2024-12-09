@@ -1,0 +1,6 @@
+@@@@
+@
+@ requires x > 5;
+@@@@@@
+@
+(* multiple @-signs need to be allowed *)

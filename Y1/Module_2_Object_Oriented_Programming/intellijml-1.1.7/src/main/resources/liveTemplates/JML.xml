@@ -1,0 +1,49 @@
+<templateSet group="JML">
+    <template name="@" value="@&#10;$END$&#10;*/" shortcut="ENTER"
+              description="Complete JML comment" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="JML" value="true"/>
+        </context>
+    </template>
+    <template name=";" value=";&#10;" shortcut="ENTER" description="Newline Indent"
+              toReformat="false" toShortenFQNames="true">
+        <context>
+            <option name="JML" value="true"/>
+        </context>
+    </template>
+	  <template name="\forall" value="(\forall int $END$; ; )" description="\forall completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+  <template name="\exists" value="(\exists int $END$; ; )" description="\exists completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+  <template name="\max" value="(\max int $END$; ; )" description="\max completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+  <template name="\min" value="(\min int $END$; ; )" description="\min completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+  <template name="\product" value="(\product int $END$; ; )" description="\product completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+  <template name="\sum" value="(\sum int $END$; ; )" description="\sum completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+  <template name="\num_of" value="(\num_of int $END$; ; )" description="\num_of completion" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JML" value="true" />
+    </context>
+  </template>
+</templateSet>

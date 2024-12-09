@@ -1,0 +1,29 @@
+<?xml version='1.0'?>
+<list>
+    <option name="JML_KEY">
+        <value>
+            <option name="FOREGROUND" value="5f99af"/>
+        </value>
+    </option>
+    <option name="JML_BACKSLASH_KEY">
+        <value>
+            <option name="FOREGROUND" value="6fb3ce"/>
+        </value>
+    </option>
+    <option name="JML_IDENTIFIER">
+        <value>
+            <option name="FOREGROUND" value="626262"/>
+        </value>
+    </option>
+    <option name="JML_AT_SIGN">
+        <value>
+            <option name="FOREGROUND" value="707070"/>
+            <option name="FONT_TYPE" value="1"/>
+        </value>
+    </option>
+    <option name="JML_VISIBILITY_KEY">
+        <value>
+            <option name="FOREGROUND" value="6fb3ce"/>
+        </value>
+    </option>
+</list>

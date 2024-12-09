@@ -1,0 +1,5 @@
+@
+ensures \type(int) == \type(test);
+ensures \typeof(x) == \elemtype(x);
+ensures \TYPE == \result;
+ensures \old(x) == \old(\typeof(\type(x)));

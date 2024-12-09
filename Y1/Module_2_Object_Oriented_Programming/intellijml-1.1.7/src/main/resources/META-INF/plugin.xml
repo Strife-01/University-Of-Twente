@@ -1,0 +1,51 @@
+<idea-plugin url="https://www.utwente.nl/">
+    <name>IntelliJML</name>
+    <id>nl.utwente.jmlplugin</id>
+    <vendor url="https://www.utwente.nl/">University of Twente</vendor>
+
+    <!-- Product and plugin compatibility requirements -->
+    <!-- https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="JML File" implementationClass="nl.utwente.jmlplugin.JMLFileType"
+                  fieldName="INSTANCE" language="JML" extensions="jml"/>
+        <lang.parserDefinition language="JML"
+                               implementationClass="nl.utwente.jmlplugin.JMLParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="JML"
+                                       implementationClass="nl.utwente.jmlplugin.syntax_highlighting.JMLSyntaxHighlighterFactory"/>
+        <multiHostInjector implementation="nl.utwente.jmlplugin.JMLMultiHostInjector"/>
+        <annotator language="JML"
+                   implementationClass="nl.utwente.jmlplugin.annotator.JMLAnnotator"/>
+        <annotator language="JML"
+                   implementationClass="nl.utwente.jmlplugin.easteregg.Rainbow"/>
+        <colorSettingsPage
+                implementation="nl.utwente.jmlplugin.syntax_highlighting.JMLColorSettingsPage"/>
+        <completion.contributor language="JML"
+                                implementationClass="nl.utwente.jmlplugin.completion.JMLCompletionContributor"
+                                order="first"/>
+        <highlightErrorFilter implementation="nl.utwente.jmlplugin.annotator.JMLAnnotator"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/JMLDarculaColorScheme.xml"/>
+        <additionalTextAttributes scheme="Default"
+                                  file="colorSchemes/JMLDefaultLightColorScheme.xml"/>
+        <applicationConfigurable groupId="tools"
+                                 instance="nl.utwente.jmlplugin.settings.Configuration"/>
+        <applicationService
+                serviceImplementation="nl.utwente.jmlplugin.settings.JMLApplicationSettings"/>
+        <projectTaskRunner implementation="nl.utwente.jmlplugin.runtime.JMLBuildListener"/>
+        <compiler.task execute="AFTER"
+                       implementation="nl.utwente.jmlplugin.runtime.JMLRuntimeCheckingCleaner"/>
+        <completion.confidence language="JML"
+                               implementationClass="nl.utwente.jmlplugin.completion.JMLCompletionConfidence"
+                               id="asTrue" order="first"/>
+        <defaultLiveTemplates file="/liveTemplates/JML.xml"/>
+        <liveTemplateContext implementation="nl.utwente.jmlplugin.editor.templates.JMLContext"/>
+        <lang.documentationProvider language="JAVA"
+                                    implementationClass="nl.utwente.jmlplugin.documentation.JMLDocumentationProvider"
+                                    order="first"/>
+    </extensions>
+
+    <applicationListeners>
+    </applicationListeners>
+</idea-plugin>

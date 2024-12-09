@@ -1,0 +1,2 @@
+@ signals_only (IOException, NullPointerException);
+(* signals_only should only work without parentheses *)

@@ -1,0 +1,5 @@
+@
+ensures (\forall int i; i > 0 && i < 10; i+5 >= 5);
+ensures (\sum int i;; i);
+ensures (\product int i;      ; i);
+ensures (\min int i; i);

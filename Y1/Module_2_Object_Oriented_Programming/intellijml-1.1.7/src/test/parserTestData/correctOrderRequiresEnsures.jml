@@ -1,0 +1,5 @@
+@ (* requires is allowed before ensures *)
+requires x > 5;
+requires y < 5;
+ensures x > 10;
+ensures y > 7;

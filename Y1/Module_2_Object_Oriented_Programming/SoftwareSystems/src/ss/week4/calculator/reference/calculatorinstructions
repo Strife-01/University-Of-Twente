@@ -1,0 +1,16 @@
+push 0000003
+push -123.00
+add
+pop
+push 40
+push 5.5
+sub
+pop
+push 100
+push 4
+mult
+pop
+push 10
+push 400
+div
+pop

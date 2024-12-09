@@ -1,0 +1,7 @@
+JML File(0,89)
+  JMLJmlSpecificationImpl(JML specification)(0,1)
+    PsiElement(at-sign)('@')(0,1)
+  PsiComment(informal description)('(* you cannot have an empty java expression (whitespace does not count) *)')(2,76)
+  PsiElement(requires)('requires')(77,85)
+  PsiErrorElement:'\not_specified' or expression expected, got ';'(88,89)
+    PsiElement(semicolon)(';')(88,89)

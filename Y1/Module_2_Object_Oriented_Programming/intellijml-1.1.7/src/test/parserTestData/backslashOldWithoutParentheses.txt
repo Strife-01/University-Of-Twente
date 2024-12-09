@@ -1,0 +1,8 @@
+JML File(0,20)
+  JMLJmlSpecificationImpl(JML specification)(0,1)
+    PsiElement(at-sign)('@')(0,1)
+  PsiElement(ensures)('ensures')(2,9)
+  PsiElement(\old)('\old')(10,14)
+  PsiErrorElement:LPARENTH expected, got 'test'(15,19)
+    PsiElement(IDENTIFIER)('test')(15,19)
+  PsiElement(semicolon)(';')(19,20)
