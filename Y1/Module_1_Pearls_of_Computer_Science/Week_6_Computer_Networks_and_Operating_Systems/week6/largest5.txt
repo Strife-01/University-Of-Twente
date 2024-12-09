@@ -1,0 +1,5 @@
+.rw-r--r--@ 284k strife  7 Oct 23:38  test.txt
+.---------    15 strife  7 Oct 23:26  weather.txt
+.-w----r--    12 strife  7 Oct 23:26  greeting.txt
+.rw-r--r--@    1 strife  7 Oct 23:29  hello.txt
+.rw-r--r--@    0 strife  7 Oct 23:43  largest5.txt
