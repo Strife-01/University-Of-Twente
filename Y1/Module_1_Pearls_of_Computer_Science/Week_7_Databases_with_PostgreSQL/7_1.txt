@@ -1,0 +1,10 @@
+7.1:
+  a) SELECT * FROM "movies"."movie" WHERE "year"=2000;
+  b) SELECT "year", COUNT(*) AS "count" FROM "movies"."movie" GROUP BY "year" ORDER BY "count" DESC;
+  c) (SELECT "movies"."movie"."name", "movies"."movie"."year" FROM "movies"."movie" JOIN "movies"."genre" ON "movies"."movie"."mid" = "movies"."genre"."mid" WHERE "movies"."genre"."genre" = 'Drama')
+  d) (SELECT "movies"."movie"."name", "movies"."movie"."year" FROM "movies"."movie" JOIN "movies"."genre" ON "movies"."movie"."mid" = "movies"."genre"."mid" WHERE "movies"."genre"."genre" = 'Drama')
+  INTERSECT
+  (SELECT "movies"."movie"."name", "movies"."movie"."year" FROM "movies"."movie" JOIN "movies"."genre" ON "movies"."movie"."mid" = "movies"."genre"."mid" WHERE "movies"."genre"."genre" = 'Crime');
+  e) SELECT "movies"."person"."name", "movies"."movie"."name", "movies"."movie"."year" FROM "movies"."movie" JOIN "movies"."acts" ON "movies"."movie"."mid" = "movies"."acts"."mid" JOIN "movies"."person" ON "movies"."acts"."pid" = "movies"."person"."pid" WHERE "movies"."acts"."role" LIKE '%Tom%' ORDER BY "movies"."person"."name", "movies"."movie"."year";
+  f) SELECT "movies"."person"."name", COUNT("movies"."person"."pid") AS "count_directed" FROM "movies"."movie" JOIN "movies"."directs" ON "movies"."movie"."mid" = "movies"."directs"."mid" JOIN "movies"."person" ON "movies"."directs"."pid" = "movies"."person"."pid" GROUP BY "movies"."person"."pid" ORDER BY "count_directed" DESC;
+  g) SELECT "movies"."language"."language", COUNT(DISTINCT "movies"."language"."mid") AS "nr_movies", COUNT(DISTINCT "movies"."person"."pid") AS "nr_actors" FROM "movies"."person" JOIN "movies"."acts" ON "movies"."person"."pid"="movies"."acts"."pid" JOIN "movies"."movie" ON "movies"."movie"."mid"="movies"."acts"."mid" JOIN "movies"."language" ON "movies"."movie"."mid" = "movies"."language"."mid" GROUP BY "movies"."language"."language";
