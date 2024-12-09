@@ -35,8 +35,6 @@ Below is the table of contents for my coursework:
 
 ---
 
----
-
 ## 📚 Main Coursework
 
 This section outlines the coursework for my **Double Degree in Technical Computer Science (TCS)** and **Applied Mathematics (AM)** at the University of Twente. The coursework is organized by academic year and quartiles (modules), with separate sections for each program.
@@ -255,3 +253,65 @@ Each course directory contains:
 - **Code and Solutions:** Implementations of programming tasks or mathematical problems.
 
 Feel free to explore the directories to dive deeper into my coursework!
+
+---
+
+## 🎓 Extra Academic Courses
+
+In addition to the coursework from my **Double Degree in Technical Computer Science (TCS)** and **Applied Mathematics (AM)**, I have enrolled in extra academic courses at the **University of Twente** to broaden my knowledge and skills. These courses complement my core program and reflect my interests in interdisciplinary studies.
+
+### 📚 Extra Courses Directory
+
+#### Systems Theory
+*Description:* Focuses on advanced mathematical techniques used in engineering, including Laplace transforms and partial differential equations with a plus on robotics principles, including kinematics, dynamics, and control systems.
+
+#### Systems Design
+*Description:* A comprehensive curriculum on software design with UML:
+  - Level 0 - Course Information:
+    - Software Systems — Design
+      
+  - Level 1 - First Steps:
+    - Introduction to Software Engineering
+    - Software (Engineering) Lifecycle
+    - Software Design & Modelling
+  
+  - Level 2 - Modelling in...
+    - Modelling in Requirements
+    - Modelling in Design
+    - Modelling in Construction
+    - Modelling in Testing
+  
+  - Level 3 - Structural Modelling
+    - Object Diagrams
+    - Class Diagrams
+    - Associations
+  
+  - Level 4 - Behavioural Modelling
+    - Activity Diagrams
+    - Interaction Diagrams
+    - State Machine Diagrams
+  
+  - Level 5 - Supplemental Modelling
+    - Use Case Diagrams
+    - Version Control
+    - git
+  
+  - Level 6 - Software Analytics
+    - Software Metrics
+    - Reverse Engineering
+    - Coding Traditions
+    - Quality Code
+    - Design Patterns
+
+---
+
+### 🌟 Why Extra Academic Courses?
+
+These courses allow me to:
+- Explore subjects beyond the scope of my double-degree program.
+- Gain interdisciplinary insights and practical skills.
+- Prepare for potential specialization areas in future studies or research.
+
+---
+
+I will add more extra courses as I progress in my academic journey. Stay tuned for updates!
