@@ -1,0 +1,549 @@
+.device atmega328p ; what type of processor do we use? do NOT change!
+
+.equ DDRB = 4   ; address of data direction register; do NOT change!
+.equ PORTB = 5  ; address of output port register; do NOT change!
+
+
+ldi r16,$30   ; register 16 now contains 0011 0000
+out DDRB,r16  ; write this to the data direction register to make
+                ; the LED and buzzer pins act as outputs
+
+start:
+  ; time repeats for note_E5
+  ldi r24, 88
+  ldi r25, 0
+  
+  note_E5:
+    call p_on
+    ldi r26, $6C
+    ldi r27, $2F
+    hog_note_E5_on:
+      sbiw r27:r26, 1
+      brne hog_note_E5_on
+    call p_off
+    ldi r26, $6C
+    ldi r27, $2F
+    hog_note_E5_off:
+      sbiw r27:r26, 1
+      brne hog_note_E5_off
+    sbiw r25:r24, 1
+    brne note_E5
+  
+  ; time repeats for note_E5_pause
+  ldi r24, 10
+  ldi r25, 0
+  
+  note_E5_pause:
+    call p_off
+    ldi r26, $6C
+    ldi r27, $2F
+    hog_note_E5_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_E5_off_pause_half
+    call p_off
+    ldi r26, $6C
+    ldi r27, $2F
+    hog_note_E5_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_E5_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_E5_pause
+
+  ; time repeats for note_D5
+  ldi r24, 88
+  ldi r25, 0
+
+  note_D5:
+    call p_on
+    ldi r26, $3D
+    ldi r27, $35
+    hog_note_D5_on:
+      sbiw r27:r26, 1
+      brne hog_note_D5_on
+    call p_off
+    ldi r26, $3D
+    ldi r27, $35
+    hog_note_D5_off:
+      sbiw r27:r26, 1
+      brne hog_note_D5_off
+    sbiw r25:r24, 1
+    brne note_D5
+  
+  ; time repeats for note_D5_pause
+  ldi r24, 9
+  ldi r25, 0
+  
+  note_D5_pause:
+    call p_off
+    ldi r26, $6C
+    ldi r27, $2F
+    hog_note_D5_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_D5_off_pause_half
+    call p_off
+    ldi r26, $6C
+    ldi r27, $2F
+    hog_note_D5_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_D5_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_D5_pause
+
+  ; time repeats for note_FS4
+  ldi r24, 99
+  ldi r25, 0
+
+  note_FS4:
+    call p_on
+    ldi r26, $76
+    ldi r27, $54
+    hog_note_FS4_on:
+      sbiw r27:r26, 1
+      brne hog_note_FS4_on
+    call p_off
+    ldi r26, $76
+    ldi r27, $54
+    hog_note_FS4_off:
+      sbiw r27:r26, 1
+      brne hog_note_FS4_off
+    sbiw r25:r24, 1
+    brne note_FS4
+  
+  ; time repeats for note_FS4_pause
+  ldi r24, 11
+  ldi r25, 0
+  
+  note_FS4_pause:
+    call p_off
+    ldi r26, $76
+    ldi r27, $54
+    hog_note_FS4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_FS4_off_pause_half
+    call p_off
+    ldi r26, $76
+    ldi r27, $54
+    hog_note_FS4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_FS4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_FS4_pause
+
+  ; time repeats for note_GS4
+  ldi r24, 111
+  ldi r25, 0
+
+  note_GS4:
+    call p_on
+    ldi r26, $4D
+    ldi r27, $4B
+    hog_note_GS4_on:
+      sbiw r27:r26, 1
+      brne hog_note_GS4_on
+    call p_off
+    ldi r26, $4D
+    ldi r27, $4B
+    hog_note_GS4_off:
+      sbiw r27:r26, 1
+      brne hog_note_GS4_off
+    sbiw r25:r24, 1
+    brne note_GS4
+  
+  ; time repeats for note_GS4_pause
+  ldi r24, 12
+  ldi r25, 0
+  
+  note_GS4_pause:
+    call p_off
+    ldi r26, $4D
+    ldi r27, $4B
+    hog_note_GS4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_GS4_off_pause_half
+    call p_off
+    ldi r26, $4D
+    ldi r27, $4B
+    hog_note_GS4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_GS4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_GS4_pause
+
+  ; time repeats for note_CS5
+  ldi r24, 74
+  ldi r25, 0
+
+  note_CS5:
+    call p_on
+    ldi r26, $68
+    ldi r27, $38
+    hog_note_CS5_on:
+      sbiw r27:r26, 1
+      brne hog_note_CS5_on
+    call p_off
+    ldi r26, $68
+    ldi r27, $38
+    hog_note_CS5_off:
+      sbiw r27:r26, 1
+      brne hog_note_CS5_off
+    sbiw r25:r24, 1
+    brne note_CS5
+  
+  ; time repeats for note_CS5_pause
+  ldi r24, 8
+  ldi r25, 0
+  
+  note_CS5_pause:
+    call p_off
+    ldi r26, $68
+    ldi r27, $38
+    hog_note_CS5_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_CS5_off_pause_half
+    call p_off
+    ldi r26, $68
+    ldi r27, $38
+    hog_note_CS5_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_CS5_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_CS5_pause
+
+  ; time repeats for note_B4
+  ldi r24, 66
+  ldi r25, 0
+
+  note_B4:
+    call p_on
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_on:
+      sbiw r27:r26, 1
+      brne hog_note_B4_on
+    call p_off
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_off:
+      sbiw r27:r26, 1
+      brne hog_note_B4_off
+    sbiw r25:r24, 1
+    brne note_B4
+  
+  ; time repeats for note_B4_pause
+  ldi r24, 7
+  ldi r25, 0
+  
+  note_B4_pause:
+    call p_off
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_B4_off_pause_half
+    call p_off
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_B4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_B4_pause
+
+  ; time repeats for note_D4
+  ldi r24, 76
+  ldi r25, 0
+
+  note_D4:
+    call p_on
+    ldi r26, $4B
+    ldi r27, $6A
+    hog_note_D4_on:
+      sbiw r27:r26, 1
+      brne hog_note_D4_on
+    call p_off
+    ldi r26, $4B
+    ldi r27, $6A
+    hog_note_D4_off:
+      sbiw r27:r26, 1
+      brne hog_note_D4_off
+    sbiw r25:r24, 1
+    brne note_D4
+  
+  ; time repeats for note_D4_pause
+  ldi r24, 9
+  ldi r25, 0
+  
+  note_D4_pause:
+    call p_off
+    ldi r26, $4B
+    ldi r27, $6A
+    hog_note_D4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_D4_off_pause_half
+    call p_off
+    ldi r26, $4B
+    ldi r27, $6A
+    hog_note_D4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_D4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_D4_pause
+
+  ; time repeats for note_E4
+  ldi r24, 88
+  ldi r25, 0
+
+  note_E4:
+    call p_on
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_on:
+      sbiw r27:r26, 1
+      brne hog_note_E4_on
+    call p_off
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_off:
+      sbiw r27:r26, 1
+      brne hog_note_E4_off
+    sbiw r25:r24, 1
+    brne note_E4
+  
+  ; time repeats for note_E4_pause
+  ldi r24, 10
+  ldi r25, 0
+  
+  note_E4_pause:
+    call p_off
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_E4_off_pause_half
+    call p_off
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_E4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_E4_pause
+
+  ; time repeats for note_B4
+  ldi r24, 66
+  ldi r25, 0
+
+  note_B4_:
+    call p_on
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_on_:
+      sbiw r27:r26, 1
+      brne hog_note_B4_on_
+    call p_off
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_off_:
+      sbiw r27:r26, 1
+      brne hog_note_B4_off_
+    sbiw r25:r24, 1
+    brne note_B4_
+  
+  ; time repeats for note_B4_pause
+  ldi r24, 7
+  ldi r25, 0
+  
+  note_B4_pause_:
+    call p_off
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_off_pause_half_:
+      sbiw r27:r26, 1
+      brne hog_note_B4_off_pause_half_
+    call p_off
+    ldi r26, $42
+    ldi r27, $3F
+    hog_note_B4_off_pause_half_2_:
+      sbiw r27:r26, 1
+      brne hog_note_B4_off_pause_half_2_
+    sbiw r25:r24, 1
+    brne note_B4_pause_
+
+  ; time repeats for note_A4
+  ldi r24, 56
+  ldi r25, 0
+
+  note_A4:
+    call p_on
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_on:
+      sbiw r27:r26, 1
+      brne hog_note_A4_on
+    call p_off
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_off:
+      sbiw r27:r26, 1
+      brne hog_note_A4_off
+    sbiw r25:r24, 1
+    brne note_A4
+  
+  ; time repeats for note_A4_pause
+  ldi r24, 7
+  ldi r25, 0
+  
+  note_A4_pause:
+    call p_off
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_A4_off_pause_half
+    call p_off
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_A4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_A4_pause
+
+  ; time repeats for note_CS4
+  ldi r24, 74
+  ldi r25, 0
+
+  note_CS4:
+    call p_on
+    ldi r26, $D1
+    ldi r27, $70
+    hog_note_CS4_on:
+      sbiw r27:r26, 1
+      brne hog_note_CS4_on
+    call p_off
+    ldi r26, $D1
+    ldi r27, $70
+    hog_note_CS4_off:
+      sbiw r27:r26, 1
+      brne hog_note_CS4_off
+    sbiw r25:r24, 1
+    brne note_CS4
+  
+  ; time repeats for note_CS4_pause
+  ldi r24, 8
+  ldi r25, 0
+  
+  note_CS4_pause:
+    call p_off
+    ldi r26, $D1
+    ldi r27, $70
+    hog_note_CS4_off_pause_half:
+      sbiw r27:r26, 1
+      brne hog_note_CS4_off_pause_half
+    call p_off
+    ldi r26, $D1
+    ldi r27, $70
+    hog_note_CS4_off_pause_half_2:
+      sbiw r27:r26, 1
+      brne hog_note_CS4_off_pause_half_2
+    sbiw r25:r24, 1
+    brne note_CS4_pause
+
+
+  ; time repeats for note_E4
+  ldi r24, 88
+  ldi r25, 0
+
+  note_E4_:
+    call p_on
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_on_:
+      sbiw r27:r26, 1
+      brne hog_note_E4_on_
+    call p_off
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_off_:
+      sbiw r27:r26, 1
+      brne hog_note_E4_off_
+    sbiw r25:r24, 1
+    brne note_E4_
+  
+  ; time repeats for note_E4_pause
+  ldi r24, 10
+  ldi r25, 0
+  
+  note_E4_pause_:
+    call p_off
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_off_pause_half_:
+      sbiw r27:r26, 1
+      brne hog_note_E4_off_pause_half_
+    call p_off
+    ldi r26, $B2
+    ldi r27, $5E
+    hog_note_E4_off_pause_half_2_:
+      sbiw r27:r26, 1
+      brne hog_note_E4_off_pause_half_2_
+    sbiw r25:r24, 1
+    brne note_E4_pause_
+
+  ; time repeats for note_A4_
+  ldi r24, 235
+  ldi r25, 0
+
+  note_A4_:
+    call p_on
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_on_:
+      sbiw r27:r26, 1
+      brne hog_note_A4_on_
+    call p_off
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_off_:
+      sbiw r27:r26, 1
+      brne hog_note_A4_off_
+    sbiw r25:r24, 1
+    brne note_A4_
+  
+  ; time repeats for note_A4_pause
+  ldi r24, 26
+  ldi r25, 0
+  
+  note_A4_pause_:
+    call p_off
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_off_pause_half_:
+      sbiw r27:r26, 1
+      brne hog_note_A4_off_pause_half_
+    call p_off
+    ldi r26, $06
+    ldi r27, $47
+    hog_note_A4_off_pause_half_2_:
+      sbiw r27:r26, 1
+      brne hog_note_A4_off_pause_half_2_
+    sbiw r25:r24, 1
+    brne note_A4_pause_
+
+
+
+  ; replay song
+  rjmp start
+
+; note util
+p_on:
+  ldi r16, $30
+  out PORTB, r16
+  ret
+
+p_off:
+  ldi r16, $00
+  out PORTB, r16
+  ret
+
+

@@ -1,0 +1,5 @@
+opcodes:
+    b1110 - e: ldi
+    b1011 1 - b: out
+    b1100 - c: rjmp
+    $0000: nop - nothing for 1 clock cycle

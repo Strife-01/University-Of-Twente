@@ -1,0 +1,48 @@
+e0f0
+e6e1
+e800
+8300
+e008
+8300
+
+e300 ; ldi r16,$30 - it loads immediately (byte 0) (not from memory)
+     ; the 3(byte 1) 0(byte 3) into register 16(byte 2)
+
+b904 ; out 4,r16 - it takes the data from r16 10000 with command 10111 into DDRB
+     ; to make it output pin of the led L 000100
+
+e200 ; ldi r16,00100000 = $20 - it loads directly the value $20 in the register r16
+     ; located at 0x00
+
+b905 ; write output value 000101 into portB pin that we made as output pin from
+     ; the register r16 10000
+
+e000 ; ldi r16,00000000 = $00 - it loads directly the value $00 in the register r16
+     ; located at 0x00
+
+b905 ; out 5,r16 write output value 000101 into portB pin that we made as output pin from
+     ; the register r16 10000
+
+0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 ; no op for 10 clock cycles
+
+cfee ; rjmp -18 + 1 = -17 make a relative jump, from where we currenlty are to -1 + 1 = 0 so it will
+     ; repeat the same cfff again - 2nd complement
+
+
+;000000010010
+;111111101101
+;111111101110
+;   f   e   e
+
+; We see a dimmer light
+; we have 16000000 / 256 = 62500 clock cycles per second
+; e - 1 clock cycle: 4 in beginnig
+; 1000001 ST - store indirect from register to data space which takes 2 cycles: 2 in beginning
+; 62500 - 8 = 62492 clock cycles in the first second - from 2nd second we will have 62500 again
+
+; e - 1 * 3 = 3 clock cycles
+; b - 1 * 3 = 3 clock cycles
+; nop = 1 * 10 = 10 clock cycles
+; rjmp = 2 clock cycles
+; 1st sec: 62492 / 18 = 3471.7 repeats per 1st second => 13887.1 ons/ offs (2b 2e) = 6943.5 ons and 6943.5 offs -- 6943.5 mutating LED on + off and 6943.5 mutating r16 which mutates the led state
+; rest: 62500 clock cycles / 18 = 3472.2 repeats per sec => 13888.8 ons + offs => 6944.4 ons and 6944.4 offs - same here

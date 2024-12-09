@@ -1,0 +1,2 @@
+e30b ; ldi r16,$3b
+940e 0200 ; send r16 to laptop

@@ -1,0 +1,53 @@
+.device atmega328p ; what type of processor do we use? do NOT change!
+
+.equ DDRB = 4   ; address of data direction register; do NOT change!
+.equ PORTB = 5  ; address of output port register; do NOT change!
+.equ FINISH_LOOP = 0 ; def
+
+prescaler_slow_down_setup:
+  ldi r31, $00
+  ldi r30, $61      ; target clkpr
+  ldi r16, $80      ; store on bit
+  st Z, r16
+  ldi r16, $08      ; set to 1/256 prescaler
+  st Z, r16
+
+  ldi r16,$20   ; register 16 now contains 0011 0000
+  out DDRB,r16  ; write this to the data direction register to make
+                ; the LED and buzzer pins act as outputs
+
+start:
+
+  ldi r16,$20   ; register 16 now contains 0010 0000
+  out PORTB,r16 ; write to the output port itself, which switches
+                ; the LED on
+
+  call config_time ; charge the decrementer
+  call repeat   ; create a subroutine for repeat to get the program counter
+                ; to jump from where this finishes
+
+  ldi r16,$00   ; register 16 now contains 0000 0000
+  out PORTB,r16 ; write to the output port itself, which switches
+                ; the LED off
+
+  call config_time ; charge the decrementer
+  call repeat   ; create a subroutine for repeat to get the program counter
+                ; to jump from where this finishes
+
+again:          ; this is not an instruction, but a label, as
+                ; indicated by the colon at the end
+  rjmp start    ; infinite loop: jump back to the label
+
+repeat:
+  sbiw r25:r24,1
+  brne repeat
+  ret
+
+config_time:    ; creating decrementing subroutine 4095 decrements
+  ldi r25,$0f   ; load the 15 val in r25 for utilizing it as MSB for subtraction
+  ldi r24,$ff   ; load the 255 val in r24 for utilizing it as LSB for subtraction
+  ret
+
+; comands
+; sbiw subtract immediate from word sbiw r1:r0,subtract
+; breq branch if equal breq num

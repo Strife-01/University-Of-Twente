@@ -1,0 +1,22 @@
+.device atmega328p ; what type of processor do we use? do NOT change!
+
+.equ DDRB = 4   ; address of data direction register; do NOT change!
+.equ PORTB = 5  ; address of output port register; do NOT change!
+
+  ldi r16,$20   ; register 16 now contains 0011 0000
+  out DDRB,r16  ; write this to the data direction register to make
+                ; the LED and buzzer pins act as outputs
+
+  ldi r16,$20   ; register 16 now contains 0010 0000
+  out PORTB,r16 ; write to the output port itself, which switches
+                ; the LED on
+
+  ldi r16,$00   ; register 16 now contains 0000 0000
+  out PORTB,r16 ; write to the output port itself, which switches
+                ; the LED off
+
+again:          ; this is not an instruction, but a label, as
+                ; indicated by the colon at the end
+
+  rjmp again    ; infinite loop: jump back to the label
+                ; note: do not use rjmp -1 anymore, only use labels
