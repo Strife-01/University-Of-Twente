@@ -1,0 +1,30 @@
+5.2.2:
+    a) 0 1 2 3 4 5 6 7
+       A H C R E I B !
+
+       BREACH = 6 3 4 0 2 1
+
+    b)
+       110 011 100 000 010 001
+
+    c) 1100 1110 0000 0100 0110
+      * XOR (1011) = 0111 1011 1001 0011 0111
+
+    d) 7 11 9 3 7
+
+    e) 5 9 7 1 5
+
+    f) 0101 1001 0111 0001 0101
+
+5.3:
+    a) Factors of 20010 = 2 * 3 * 5 * 23 * 29
+       Smallest Coprime is 7
+
+    b)
+
+5.6:
+    a) HERE IS AN ENGLISH SENTENCE THAT CONTAINS MORE OF THE LETTER E THAN OF ANY OTHER LETTER
+       Key 3
+
+    b) KEY = SEVEN
+       IF YOURE ABLE TO READ THIS MESSAGE THEN YOU HAVE SUCCESSFULLY PASSED THE FIRST PEARL ASSIGNMENT
