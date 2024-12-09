@@ -1,10 +1,12 @@
 # 🎓 University of Twente - Double Degree in Technical Computer Science & Applied Mathematics
 
+<a href="www.utwente.nl">
 <p align="center">
   <img src="https://1348661504.rsc.cdn77.org/.publisher/sd/utwente_base/ws2016/img/logos/ut-logo-white-en.svg" alt="University of Twente Logo" width="3000"/>
 </p>
+</a>
 
-Welcome to my repository documenting my academic journey at the **University of Twente**, where I am pursuing a **Double Degree in Technical Computer Science (TCS)** and **Applied Mathematics (AM)**. This repository is a comprehensive showcase of my projects, assignments, and coursework throughout my bachelor's studies.
+Welcome to my repository documenting my academic journey at the **University of Twente** in the Netherlands, where I am pursuing a **Double Degree in Technical Computer Science (TCS)** and **Applied Mathematics (AM)**. This repository is a comprehensive showcase of my projects, assignments, and coursework throughout my bachelor's studies.
 
 ---
 
