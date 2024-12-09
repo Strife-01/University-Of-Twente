@@ -1,0 +1,6 @@
+a.append(b) will append the element b to the list a
+a = [1, 2]; b = 3; a = [1, 2, 3]
+a = [1, 2]; b = [3, 4]; b = [1, 2, [3, 4]]
+
+a.extend(b) will iterate through all the elements in b and append them to a
+extend expects an iterable so in case of b = 3 will throu an error

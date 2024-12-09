@@ -1,0 +1,4 @@
+Search for first word? 
+results for linear and binary differ: -1 versus Non existent in the list of values
+linear search took 8704 micros to complete
+binary search took 6 micros to complete

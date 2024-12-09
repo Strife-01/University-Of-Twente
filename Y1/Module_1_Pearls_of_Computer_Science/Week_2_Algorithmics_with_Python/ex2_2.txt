@@ -1,0 +1,12 @@
+import search
+search . linear ([4 , 2, 3, 2] , 2)
+1
+search . linear ([4 , 2, 3, 2] , 5)
+-1
+search . linear ([ "a" , " short " , " sentence "], " sentence ")
+2
+search . linear ([ "a" , " short " , " sentence "], 2)
+-1
+
+it linearly searches the list and if it finds the element, it prints the index
+if not then it prints -1 when the loop is finished

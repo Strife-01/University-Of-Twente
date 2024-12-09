@@ -1,0 +1,2 @@
+often - 4
+never - -1

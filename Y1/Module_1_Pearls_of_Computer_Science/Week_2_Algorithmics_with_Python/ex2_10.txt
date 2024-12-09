@@ -1,0 +1,5 @@
+a) linear search will take now 2*X
+   for binary search it will take log2(2*X) which is 1 case more than in the original
+
+b) linear search O(n)
+   binary search O(log(n))

@@ -1,0 +1,4 @@
+If the list is already sorted then it is O(n) time complexity
+If it is in complete reverse it is O(n^2) time complexity
+
+Allways O(n) space complexity

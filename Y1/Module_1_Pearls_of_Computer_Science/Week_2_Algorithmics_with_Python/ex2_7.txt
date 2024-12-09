@@ -1,0 +1,5 @@
+Binary search is used to logarithmically search a value in a list of sorted values.
+We start by getting the mid value between the first index and the last index.
+If we found our value we are done, if not then we have to check if the found mid value is higher or lower than our searched value.
+If it is lower we check again but in the lower left to mid - 1 and if it is higher we check in the higher mid + 1 right half.
+If left is bigger than right it means that the value is not in the list of values.
