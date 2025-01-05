@@ -19,7 +19,8 @@ public class FinePizzaCounter {
     private final List<Pizza> pizzas = new LinkedList<>();
     private static final int MAX_PIZZAS = 1;
     private final Lock lock = new ReentrantLock();
-    private final Condition pizzaCounterCondition = lock.newCondition();
+    private final Condition pizzaBakerCondition = lock.newCondition();
+    private final Condition pizzaDeliveryCondition = lock.newCondition();
 
     /*@ invariant pizzas.size() >= 0 && pizzas.size() <= MAX_PIZZAS; @*/
 
@@ -41,11 +42,11 @@ public class FinePizzaCounter {
             // As long as the required condition is not respected we force the thread to wait.
             // Wait while the counter is full.
             while (pizzas.size() >= MAX_PIZZAS) {
-                pizzaCounterCondition.await();
+                pizzaBakerCondition.await();
             }
             // If the counter is empty - i.e. we can still add pizza we add it and signal the thread that it is ok to proceed.
             pizzas.add(pizza);
-            pizzaCounterCondition.signal();
+            pizzaDeliveryCondition.signal();
         } catch (InterruptedException e) {
             // In case of a blocking thread we eliminate it so we don't create deadlocks.
             Thread.currentThread().interrupt();
@@ -77,10 +78,10 @@ public class FinePizzaCounter {
             lock.lock();
             // As long as the condition is not respected we force the thread to wait.
             while (pizzas.isEmpty()) {
-                pizzaCounterCondition.await();
+                pizzaDeliveryCondition.await();
             }
             // When we get a new pizza we signal the thread that it can take it.
-            pizzaCounterCondition.signal();
+            pizzaBakerCondition.signal();
             return pizzas.remove(0);
         } catch (InterruptedException e) {
             // In case of thread hogging we kill it so we don't get deadlocks.
