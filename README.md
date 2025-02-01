@@ -99,6 +99,7 @@ This section outlines the coursework for my **Double Degree in Technical Compute
 ##### Quartile 1B
 - **Technical Computer Science (TCS):**
   - **Object-Oriented Programming (8 EC)**
+    **Project:** A fully featured Atary Go Game with network integration, multythreading, embedded chat, etc.
     *Description:* A comprehensive course on object-oriented programming principles using Java, focused on Design Patterns and the four pillars of OOP: Abstraction, Encapsulation, Inheritance, and Polymorphism
   - **System Design**
     *Description:* Design patterns, UML diagrams, Testing, etc.
