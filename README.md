@@ -100,13 +100,18 @@ This section outlines the coursework for my **Double Degree in Technical Compute
 - **Technical Computer Science (TCS):**
   - **Object-Oriented Programming (8 EC)**
     *Description:* A comprehensive course on object-oriented programming principles using Java, focused on Design Patterns and the four pillars of OOP: Abstraction, Encapsulation, Inheritance, and Polymorphism
+  - **System Design**
+    *Description:* Design patterns, UML diagrams, Testing, etc.
     
 - **Applied Mathematics (AM):**
   - **Linear Structures 2 (4 EC)**  
     *Description:* A continuation of Linear Structures 1, focusing on advanced applications.  
 
   - **Analysis 2 (6 EC)**  
-    *Description:* Advanced integral analysis and multivariable functions.  
+    *Description:* Advanced integral analysis and multivariable functions.
+
+  - **Systems Theory**
+    *Description:* Control Theory, Kinematics and Robotics Mathematics.
 
 ##### Quartile 2A
 - **Technical Computer Science (TCS):**
