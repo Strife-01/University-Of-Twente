@@ -266,6 +266,15 @@ Feel free to explore the directories to dive deeper into my coursework!
 
 In addition to the coursework from my **Double Degree in Technical Computer Science (TCS)** and **Applied Mathematics (AM)**, I have enrolled in extra academic courses at the **University of Twente** to broaden my knowledge and skills. These courses complement my core program and reflect my interests in interdisciplinary studies.
 
+## 🎓 [The Honours Program - Mathematics](https://www.utwente.nl/en/honours/bachelor/tracks/#mathematics)
+Asides from everything I do in my normal coursework, I am pursuing the Mathematics Honours Program at the University of Twente where I am studying 6 additional courses for a total of 30 ECs more:
+- #### Topology and its Applications (5 EC)
+- #### Enumerative Combinatorics (5 EC)
+- #### Complex networks (5 EC)
+- #### Signals with Information (5 EC)
+- #### Conceptual and Mathematical Anatomy of Quantum Theory (5 EC)
+- #### Optimal transport & Machine learning (5 EC)
+
 ### 📚 Extra Courses Directory
 
 #### Systems Theory
