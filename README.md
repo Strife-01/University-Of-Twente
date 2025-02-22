@@ -176,7 +176,9 @@ This section outlines the coursework for my **Double Degree in Technical Compute
     *Description:* Advanced statistical techniques.  
 
   - **Linear Optimization (5 EC)**  
-    *Description:* Techniques for solving linear optimization problems.  
+    *Description:* Techniques for solving linear optimization problems.
+
+  - **Nonlinear Optimisation and Learning**
 
 ##### Quartile 2A
 - **TCS/AM Combined:**
@@ -234,11 +236,15 @@ This section outlines the coursework for my **Double Degree in Technical Compute
 ##### Quartile 2A
 - **Technical Computer Science (TCS):**
   - **Design Project Core (15 EC)**  
-    *Description:* A major project in system or software design.  
+    *Description:* A major project in system and software design.  
 
 - **Applied Mathematics (AM):**
   - **Graph Theory (4 EC)**  
-    *Description:* Fundamental concepts in graph theory.  
+    *Description:* Fundamental concepts in graph theory.
+  - **Introduction to PDE**
+  - **Mathematics behind Data-Driven Methods**
+  - **Topics in Sequential Decision-Making**
+  - **Model Reduction**
 
 ##### Quartile 2B
 - **TCS/AM Combined:**
