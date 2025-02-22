@@ -19,7 +19,7 @@ This repository serves several purposes:
 
 ---
 
-## 🌍 Dual-Degree Focus
+## 🌍 Double-Degree Focus
 
 - **Technical Computer Science:** Programming, algorithms, networks, systems, and AI.
 - **Applied Mathematics:** Analysis, algebra, optimization, probability, and modeling with a strong emphasis on formal proofs.
