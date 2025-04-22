@@ -1,0 +1,107 @@
+/**
+ * lpm.cpp
+ *
+ * Version: 2020-03-02
+ * Copyright: University of Twente, 2015-2025
+ *
+ **************************************************************************
+ *                          = Copyright notice =                          *
+ *                                                                        *
+ *            This file may  ONLY  be distributed UNMODIFIED              *
+ * In particular, a correct solution to the challenge must  NOT be posted *
+ * in public places, to preserve the learning effect for future students. *
+ **************************************************************************
+ */
+
+
+#include <stdio.h>
+
+void ip2human(unsigned int ip);
+
+
+//// you can declare global variables here.
+typedef struct PatriciaTrie PatriciaTrie;
+struct PatriciaTrie {
+    PatriciaTrie* left;    // go the route of 0 bit
+    PatriciaTrie* right;   // go the route of 1 bit
+    int bitPosition;       // the number of the current bit starting from -1
+    int interfaceNumber;   // the number of the output interface
+};
+
+PatriciaTrie* root;
+
+void init() {
+    // You can use this function to initialize variables.
+    root = new PatriciaTrie();
+    root->left = nullptr;
+    root->right = nullptr;
+    root->interfaceNumber = -1;
+    root->bitPosition = -1;
+}
+
+void add_route(unsigned int ip, int prefix_length, int port_number) {
+    PatriciaTrie* current = root;
+
+    for (int i = 0; i < prefix_length; i++) {
+        unsigned int mask = 0x80000000 >> i;
+        bool bit_value = (ip & mask) != 0;
+
+        PatriciaTrie** next = bit_value ? &(current->right) : &(current->left);
+
+        if (*next == nullptr) {
+            *next = new PatriciaTrie();
+            (*next)->bitPosition = i;
+            (*next)->interfaceNumber = -1; // Not a valid prefix yet
+        }
+
+        current = *next;
+    }
+
+    current->interfaceNumber = port_number;
+}
+
+// This method is called after all routes have been added.
+// You don't have to use this method but can use it to sort or otherwise
+// organize the routing information, if your datastructure requires this.
+void finalize_routes() {
+    // TODO: (optionally) use this to finalize your routes.
+}
+
+int lookup_ip(unsigned int ip) {
+    PatriciaTrie* current = root;
+    int bestMatch = -1;  // Track the best match found so far
+
+    for (int i = 0; i < 32; i++) {
+        if (current->interfaceNumber != -1) {
+            bestMatch = current->interfaceNumber;
+        }
+
+        unsigned int mask = 0x80000000 >> i;
+        bool bit_value = (ip & mask) != 0;
+
+        PatriciaTrie* next = bit_value ? current->right : current->left;
+        if (next == nullptr) {
+            return bestMatch;
+        }
+
+        current = next;
+    }
+
+    if (current->interfaceNumber != -1) {
+        bestMatch = current->interfaceNumber;
+    }
+
+    return bestMatch;
+}
+
+// convenience function to print IP addresses in human readable form for debugging
+void ip2human(unsigned int ip) {
+    unsigned int a, b, c, d;
+
+    a = (ip >> 24) & 0xff;
+    b = (ip >> 16) & 0xff;
+    c = (ip >>  8) & 0xff;
+    d =  ip        & 0xff;
+
+    printf("%i.%i.%i.%i\n", a, b, c, d);
+}

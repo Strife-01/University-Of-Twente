@@ -1,0 +1,245 @@
+/**
+* memory_efficient_lpm.cpp
+ *
+ * Version: 2025-03-06
+ * Copyright: University of Twente, 2015-2025
+ *
+ **************************
+ *                          = Copyright notice =                          *
+ *                                                                        *
+ *            This file may  ONLY  be distributed UNMODIFIED              *
+ * In particular, a correct solution to the challenge must  NOT be posted *
+ * in public places, to preserve the learning effect for future students. *
+ **************************
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
+#define DIRECT_BITS 16
+#define DIRECT_SIZE (1 << DIRECT_BITS)
+#define NODE_POOL_SIZE 3000000  // Increased size for safety
+
+void ip2human(unsigned int ip);
+
+// Memory-optimized TrieNode structure
+// Using 8-bit port index instead of direct int (saves space)
+// Using pointers as 32-bit indexes into the pool rather than 64-bit pointers
+struct TrieNode {
+    int8_t port_index;          // Index into port table (-1 means no port)
+    uint32_t children_idx[2];   // Indexes into node pool instead of pointers
+};
+
+// Compact port table to avoid storing full integers in each node
+#define MAX_PORTS 256
+int port_table[MAX_PORTS];
+int next_port_index = 0;
+
+// Global memory pool for nodes
+TrieNode* node_pool = NULL;
+uint32_t next_free_node = 0;
+
+// Direct lookup table for first DIRECT_BITS
+uint32_t* direct_table = NULL;  // Using indexes instead of pointers
+
+// Simple cache
+#define CACHE_SIZE 2048
+struct {
+    unsigned int ip;
+    int port;
+    uint8_t valid;
+} lookup_cache[CACHE_SIZE];
+
+// Convert index to node pointer
+inline TrieNode* idx_to_node(uint32_t idx) {
+    if (idx == 0) return NULL;
+    return &node_pool[idx - 1];  // 0 means NULL
+}
+
+// Convert node pointer to index
+inline uint32_t node_to_idx(TrieNode* node) {
+    if (node == NULL) return 0;
+    return (node - node_pool) + 1;  // +1 so 0 can mean NULL
+}
+
+// Add port to port table
+int add_to_port_table(int port_number) {
+    // First check if port already exists
+    for (int i = 0; i < next_port_index; i++) {
+        if (port_table[i] == port_number) {
+            return i;
+        }
+    }
+
+    // Add new port if table not full
+    if (next_port_index < MAX_PORTS) {
+        port_table[next_port_index] = port_number;
+        return next_port_index++;
+    }
+
+    // Table full - emergency fallback
+    fprintf(stderr, "Warning: Port table full, using first slot\n");
+    return 0;
+}
+
+// Get port from port table
+int get_from_port_table(int8_t index) {
+    if (index < 0 || index >= next_port_index) return -1;
+    return port_table[index];
+}
+
+// Fast node creation from pool
+uint32_t create_node() {
+    if (next_free_node >= NODE_POOL_SIZE) {
+        fprintf(stderr, "Node pool exhausted\n");
+        exit(1);
+    }
+
+    uint32_t idx = next_free_node++;
+    TrieNode* node = &node_pool[idx];
+    node->port_index = -1;
+    node->children_idx[0] = 0;
+    node->children_idx[1] = 0;
+
+    return idx + 1;  // +1 so 0 can mean NULL
+}
+
+void init() {
+    // Allocate node pool
+    node_pool = (TrieNode*)calloc(NODE_POOL_SIZE, sizeof(TrieNode));
+    if (!node_pool) {
+        fprintf(stderr, "Failed to allocate node pool\n");
+        exit(1);
+    }
+
+    // Reset node pool index
+    next_free_node = 0;
+
+    // Reset port table
+    next_port_index = 0;
+    memset(port_table, 0, sizeof(port_table));
+
+    // Allocate direct table (using indexes instead of pointers)
+    direct_table = (uint32_t*)calloc(DIRECT_SIZE, sizeof(uint32_t));
+    if (!direct_table) {
+        fprintf(stderr, "Failed to allocate direct table\n");
+        exit(1);
+    }
+
+    // Clear lookup cache
+    memset(lookup_cache, 0, sizeof(lookup_cache));
+}
+
+// Add route with memory-efficient data structures
+void add_route(unsigned int ip, int prefix_length, int port_number) {
+    // Get port index for port table
+    int8_t port_idx = add_to_port_table(port_number);
+
+    // Handle the direct table case for short prefixes
+    if (prefix_length <= DIRECT_BITS) {
+        unsigned int mask = 0xFFFFFFFF << (32 - prefix_length);
+        unsigned int prefix = ip & mask;
+        unsigned int start = prefix >> (32 - DIRECT_BITS);
+        unsigned int count = 1 << (DIRECT_BITS - prefix_length);
+
+        for (unsigned int i = 0; i < count; i++) {
+            unsigned int idx = start + i;
+            if (idx < DIRECT_SIZE) {
+                if (direct_table[idx] == 0) {
+                    direct_table[idx] = create_node();
+                }
+                if (direct_table[idx] != 0) {
+                    TrieNode* node = idx_to_node(direct_table[idx]);
+                    node->port_index = port_idx;
+                }
+            }
+        }
+        return;
+    }
+
+    // For longer prefixes, use the trie
+    unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+    if (direct_index < DIRECT_SIZE) {
+        if (direct_table[direct_index] == 0) {
+            direct_table[direct_index] = create_node();
+        }
+
+        TrieNode* node = idx_to_node(direct_table[direct_index]);
+
+        for (int i = DIRECT_BITS; i < prefix_length && node; i++) {
+            int bit = (ip >> (31 - i)) & 1;
+
+            if (node->children_idx[bit] == 0) {
+                node->children_idx[bit] = create_node();
+            }
+
+            node = idx_to_node(node->children_idx[bit]);
+        }
+
+        if (node) {
+            node->port_index = port_idx;
+        }
+    }
+}
+
+void finalize_routes() {
+    // Initialize lookup cache
+    memset(lookup_cache, 0, sizeof(lookup_cache));
+}
+
+// Optimized lookup with memory-efficient data structures
+int lookup_ip(unsigned int ip) {
+    // Check cache first
+    unsigned int cache_idx = (ip >> 16) & (CACHE_SIZE - 1);
+    if (lookup_cache[cache_idx].valid && lookup_cache[cache_idx].ip == ip) {
+        return lookup_cache[cache_idx].port;
+    }
+
+    unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+
+    if (direct_index < DIRECT_SIZE && direct_table[direct_index] != 0) {
+        TrieNode* node = idx_to_node(direct_table[direct_index]);
+        int best_match = (node->port_index >= 0) ? get_from_port_table(node->port_index) : -1;
+
+        // Pre-calculate bits to avoid repeated shifting
+        unsigned int bits = ip << DIRECT_BITS;
+
+        for (int i = DIRECT_BITS; i < 32 && node; i++) {
+            if (node->port_index >= 0) {
+                best_match = get_from_port_table(node->port_index);
+            }
+
+            // Extract the next bit more efficiently
+            int bit = (bits >> 31) & 1;
+            bits <<= 1;
+
+            node = idx_to_node(node->children_idx[bit]);
+        }
+
+        if (node && node->port_index >= 0) {
+            best_match = get_from_port_table(node->port_index);
+        }
+
+        // Update cache
+        lookup_cache[cache_idx].ip = ip;
+        lookup_cache[cache_idx].port = best_match;
+        lookup_cache[cache_idx].valid = 1;
+
+        return best_match;
+    }
+
+    return -1;
+}
+
+void ip2human(unsigned int ip) {
+     unsigned int a, b, c, d;
+
+     a = (ip >> 24) & 0xff;
+     b = (ip >> 16) & 0xff;
+     c = (ip >>  8) & 0xff;
+     d =  ip        & 0xff;
+
+     printf("%i.%i.%i.%i\n", a, b, c, d);
+}

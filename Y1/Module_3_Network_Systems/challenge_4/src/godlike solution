@@ -1,0 +1,308 @@
+/**
+* lpm.cpp
+ *
+ * Version: 2020-03-02
+ * Copyright: University of Twente, 2015-2025
+ *
+ **************************
+ *                          = Copyright notice =                          *
+ *                                                                        *
+ *            This file may  ONLY  be distributed UNMODIFIED              *
+ * In particular, a correct solution to the challenge must  NOT be posted *
+ * in public places, to preserve the learning effect for future students. *
+ **************************
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
+#define DIRECT_BITS 22
+#define DIRECT_SIZE (1 << DIRECT_BITS)
+
+#define MAX_TRIE_DEPTH (32 - DIRECT_BITS)
+
+// Increased cache size for better hit rate
+#define LOOKUP_CACHE_SIZE 32768
+#define LOOKUP_CACHE_MASK (LOOKUP_CACHE_SIZE - 1)
+
+void ip2human(unsigned int ip);
+
+struct TrieNode {
+    int8_t port;
+    uint32_t left_idx;
+    uint32_t right_idx;
+};
+
+struct LookupCacheEntry {
+    uint32_t ip;
+    int8_t port;
+    uint8_t valid;
+};
+
+#define NODE_POOL_SIZE 3000000
+TrieNode* node_pool = NULL;
+uint32_t next_node_idx = 1;
+
+uint32_t* direct_table = NULL;
+
+LookupCacheEntry lookup_cache[LOOKUP_CACHE_SIZE];
+
+// Default route for fallback
+int default_route = -1;
+
+// Performance statistics
+struct {
+    uint64_t lookups;
+    uint64_t cache_hits;
+    uint64_t direct_table_hits;
+    uint64_t trie_traversals;
+} stats = {0};
+
+// Force inlining of critical functions for maximum speed
+inline __attribute__((always_inline)) TrieNode* idx_to_node(uint32_t idx) {
+    if (__builtin_expect(idx == 0, 0)) return NULL;
+    return &node_pool[idx];
+}
+
+uint32_t create_node() {
+    if (next_node_idx >= NODE_POOL_SIZE) {
+        fprintf(stderr, "Node pool exhausted\n");
+        exit(1);
+    }
+
+    uint32_t idx = next_node_idx++;
+    TrieNode* node = &node_pool[idx];
+    node->port = -1;
+    node->left_idx = 0;
+    node->right_idx = 0;
+
+    return idx;
+}
+
+void init() {
+    // Allocate node pool as a contiguous block for better cache locality
+    node_pool = (TrieNode*)calloc(NODE_POOL_SIZE, sizeof(TrieNode));
+    if (!node_pool) {
+        fprintf(stderr, "Failed to allocate node pool\n");
+        exit(1);
+    }
+
+    next_node_idx = 1;
+
+    direct_table = (uint32_t*)calloc(DIRECT_SIZE, sizeof(uint32_t));
+    if (!direct_table) {
+        fprintf(stderr, "Failed to allocate direct table\n");
+        exit(1);
+    }
+
+    memset(lookup_cache, 0, sizeof(lookup_cache));
+
+    // Initialize default route
+    default_route = -1;
+
+    // Reset statistics
+    memset(&stats, 0, sizeof(stats));
+}
+
+// Optimized default route handling
+void add_default_route(int port_number) {
+    default_route = port_number;
+
+    // Set port for nodes that don't have a more specific route
+    for (unsigned int i = 0; i < DIRECT_SIZE; i++) {
+        if (direct_table[i] == 0) {
+            direct_table[i] = create_node();
+        }
+        TrieNode* node = idx_to_node(direct_table[i]);
+        if (node->port == -1) {
+            node->port = port_number;
+        }
+    }
+}
+
+void add_route(unsigned int ip, int prefix_length, int port_number) {
+    if (prefix_length == 0) {
+        add_default_route(port_number);
+        return;
+    }
+
+    if (prefix_length <= DIRECT_BITS) {
+        unsigned int mask = 0xFFFFFFFF << (32 - prefix_length);
+        unsigned int prefix = ip & mask;
+        unsigned int start = prefix >> (32 - DIRECT_BITS);
+        unsigned int count = 1 << (DIRECT_BITS - prefix_length);
+
+        for (unsigned int i = 0; i < count; i++) {
+            unsigned int idx = start + i;
+            if (idx < DIRECT_SIZE) {
+                if (direct_table[idx] == 0) {
+                    direct_table[idx] = create_node();
+                }
+                TrieNode* node = idx_to_node(direct_table[idx]);
+                node->port = port_number;
+            }
+        }
+        return;
+    }
+
+    unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+    if (direct_index < DIRECT_SIZE) {
+        if (direct_table[direct_index] == 0) {
+            direct_table[direct_index] = create_node();
+        }
+
+        TrieNode* node = idx_to_node(direct_table[direct_index]);
+
+        for (int i = DIRECT_BITS; i < prefix_length; i++) {
+            int bit = (ip >> (31 - i)) & 1;
+
+            if (bit == 0) {
+                if (node->left_idx == 0) {
+                    node->left_idx = create_node();
+                }
+                node = idx_to_node(node->left_idx);
+            } else {
+                if (node->right_idx == 0) {
+                    node->right_idx = create_node();
+                }
+                node = idx_to_node(node->right_idx);
+            }
+        }
+
+        if (node) {
+            node->port = port_number;
+        }
+    }
+}
+
+void finalize_routes() {
+    memset(lookup_cache, 0, sizeof(lookup_cache));
+    memset(&stats, 0, sizeof(stats));
+}
+
+// Highly optimized lookup function for maximum speed
+int lookup_ip(unsigned int ip) {
+    stats.lookups++;
+
+    // Check cache first (likely case for repeated lookups)
+    uint32_t cache_idx = (ip >> 8) & LOOKUP_CACHE_MASK;
+    if (__builtin_expect(lookup_cache[cache_idx].valid && lookup_cache[cache_idx].ip == ip, 1)) {
+        stats.cache_hits++;
+        return lookup_cache[cache_idx].port;
+    }
+
+    // Direct table lookup
+    unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+    int best_match = default_route;  // Start with default route
+
+    if (__builtin_expect(direct_index < DIRECT_SIZE && direct_table[direct_index] != 0, 1)) {
+        TrieNode* node = idx_to_node(direct_table[direct_index]);
+
+        // Update best match if node has a valid port
+        if (node->port != -1) {
+            best_match = node->port;
+        }
+
+        // Quick check if this is a leaf node (common case)
+        if (__builtin_expect(node->left_idx == 0 && node->right_idx == 0, 1)) {
+            // Leaf node in direct table - no need to traverse
+            stats.direct_table_hits++;
+        } else {
+            // Need to traverse the trie
+            stats.trie_traversals++;
+
+            // For maximum speed, we'll unroll the most common case (first 8 levels)
+            // and use a tight loop for the rest
+            register uint32_t bits_field = ip << DIRECT_BITS;
+
+            // Fast path: first 8 bits (most common case)
+            #define PROCESS_BIT(bit_pos) \
+                if (node->port != -1) best_match = node->port; \
+                node = idx_to_node((bits_field & 0x80000000) ? node->right_idx : node->left_idx); \
+                if (__builtin_expect(!node, 0)) goto done; \
+                bits_field <<= 1;
+
+            // Unroll first 8 bits for speed (avoid loop overhead)
+            PROCESS_BIT(0)
+            PROCESS_BIT(1)
+            PROCESS_BIT(2)
+            PROCESS_BIT(3)
+            PROCESS_BIT(4)
+            PROCESS_BIT(5)
+            PROCESS_BIT(6)
+            PROCESS_BIT(7)
+
+            // Handle remaining bits with a tight loop
+            for (int i = DIRECT_BITS + 8; i < 32 && node; i++) {
+                if (node->port != -1) {
+                    best_match = node->port;
+                }
+
+                int bit = (bits_field >> 31) & 1;
+                bits_field <<= 1;
+
+                node = idx_to_node(bit ? node->right_idx : node->left_idx);
+            }
+
+            // Check final node
+            if (node && node->port != -1) {
+                best_match = node->port;
+            }
+        }
+    }
+
+done:
+    // Update cache
+    lookup_cache[cache_idx].ip = ip;
+    lookup_cache[cache_idx].port = best_match;
+    lookup_cache[cache_idx].valid = 1;
+
+    return best_match;
+}
+
+size_t get_memory_usage() {
+    size_t total = 0;
+    size_t node_pool_size = NODE_POOL_SIZE * sizeof(TrieNode);
+    size_t direct_table_size = DIRECT_SIZE * sizeof(uint32_t);
+    size_t cache_size = sizeof(lookup_cache);
+
+    total += node_pool_size;
+    total += direct_table_size;
+    total += cache_size;
+
+    printf("Memory usage breakdown:\n");
+    printf("  Node pool: %.2f MB\n", node_pool_size / (1024.0 * 1024.0));
+    printf("  Direct table: %.2f MB\n", direct_table_size / (1024.0 * 1024.0));
+    printf("  Lookup cache: %.2f MB\n", cache_size / (1024.0 * 1024.0));
+    printf("  Total: %.2f MB\n", total / (1024.0 * 1024.0));
+
+    // Print performance statistics
+    if (stats.lookups > 0) {
+        printf("\nPerformance statistics:\n");
+        printf("  Total lookups: %llu\n", stats.lookups);
+        printf("  Cache hits: %llu (%.2f%%)\n",
+               stats.cache_hits,
+               (stats.cache_hits * 100.0) / stats.lookups);
+        printf("  Direct table hits: %llu (%.2f%%)\n",
+               stats.direct_table_hits,
+               (stats.direct_table_hits * 100.0) / stats.lookups);
+        printf("  Trie traversals: %llu (%.2f%%)\n",
+               stats.trie_traversals,
+               (stats.trie_traversals * 100.0) / stats.lookups);
+    }
+
+    return total;
+}
+
+void ip2human(unsigned int ip) {
+     unsigned int a, b, c, d;
+
+     a = (ip >> 24) & 0xff;
+     b = (ip >> 16) & 0xff;
+     c = (ip >>  8) & 0xff;
+     d =  ip        & 0xff;
+
+     printf("%i.%i.%i.%i\n", a, b, c, d);
+}

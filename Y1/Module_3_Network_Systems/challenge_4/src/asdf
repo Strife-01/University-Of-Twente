@@ -1,0 +1,181 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+#include <array>
+#include <bit>
+#include <cstdint>
+
+#define DIRECT_BITS 16
+#define DIRECT_SIZE (1 << DIRECT_BITS)
+#define MAX_NODES 1048576  // Preallocated node pool size
+
+// Forward declaration
+void ip2human(unsigned int ip);
+
+class FastLPM {
+private:
+    // Preallocated node structure to minimize dynamic memory allocation
+    struct alignas(64) RouteNode {
+        int32_t port;        // Port for this route
+        uint32_t left_mask;  // Mask for routing to left child
+        uint32_t right_mask; // Mask for routing to right child
+        RouteNode* left;     // Left child pointer
+        RouteNode* right;    // Right child pointer
+    };
+
+    // Preallocated memory pool for nodes
+    std::array<RouteNode, MAX_NODES> node_pool;
+    size_t node_pool_index;
+
+    // Direct table for fast initial routing
+    std::array<RouteNode*, DIRECT_SIZE> direct_table;
+
+    // Root of the routing trie
+    RouteNode* root;
+
+    // Fast node allocation from preallocated pool
+    RouteNode* allocateNode() {
+        if (node_pool_index >= MAX_NODES) {
+            fprintf(stderr, "Node pool exhausted\n");
+            exit(1);
+        }
+        RouteNode* node = &node_pool[node_pool_index++];
+        node->port = -1;
+        node->left = node->right = nullptr;
+        node->left_mask = node->right_mask = 0;
+        return node;
+    }
+
+    // Optimized route insertion
+    void insertRoute(unsigned int ip, int prefix_length, int port_number) {
+        // Handle direct table routes
+        if (prefix_length <= DIRECT_BITS) {
+            unsigned int mask = 0xFFFFFFFF << (32 - prefix_length);
+            unsigned int prefix = ip & mask;
+            unsigned int start = prefix >> (32 - DIRECT_BITS);
+            unsigned int count = 1 << (DIRECT_BITS - prefix_length);
+
+            for (unsigned int i = 0; i < count; i++) {
+                unsigned int idx = start + i;
+                if (idx < DIRECT_SIZE) {
+                    if (!direct_table[idx]) {
+                        direct_table[idx] = allocateNode();
+                    }
+                    direct_table[idx]->port = port_number;
+                }
+            }
+            return;
+        }
+
+        // Handle longer prefix routes
+        unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+        if (direct_index >= DIRECT_SIZE) return;
+
+        // Ensure direct table entry exists
+        if (!direct_table[direct_index]) {
+            direct_table[direct_index] = allocateNode();
+        }
+
+        RouteNode* node = direct_table[direct_index];
+
+        // Traverse/create route for longer prefixes
+        for (int i = DIRECT_BITS; i < prefix_length; i++) {
+            int bit = (ip >> (31 - i)) & 1;
+
+            RouteNode** child_ptr = bit ? &node->right : &node->left;
+            if (!*child_ptr) {
+                *child_ptr = allocateNode();
+            }
+
+            // Update bit-based routing masks
+            if (bit) {
+                node->right_mask |= (1U << (31 - i));
+            } else {
+                node->left_mask |= (1U << (31 - i));
+            }
+
+            node = *child_ptr;
+        }
+
+        // Set final port
+        node->port = port_number;
+    }
+
+public:
+    FastLPM() : node_pool_index(0), root(nullptr) {
+        // Initialize direct table to null
+        direct_table.fill(nullptr);
+    }
+
+    void addRoute(unsigned int ip, int prefix_length, int port_number) {
+        insertRoute(ip, prefix_length, port_number);
+    }
+
+    int lookupIP(unsigned int ip) const {
+        unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+
+        if (direct_index >= DIRECT_SIZE || !direct_table[direct_index]) {
+            return -1;
+        }
+
+        RouteNode* node = direct_table[direct_index];
+        int best_match = node->port;
+
+        // Optimized lookup using bit masks and direct traversal
+        for (int i = DIRECT_BITS; i < 32; i++) {
+            // Update best match if current node has a valid port
+            if (node->port != -1) {
+                best_match = node->port;
+            }
+
+            // Determine routing direction using bit and mask
+            int bit = (ip >> (31 - i)) & 1;
+            RouteNode* next_node = bit ? node->right : node->left;
+
+            // Early exit if no more specific route exists
+            if (!next_node) break;
+
+            node = next_node;
+        }
+
+        // Check final node for potential match
+        if (node && node->port != -1) {
+            best_match = node->port;
+        }
+
+        return best_match;
+    }
+};
+
+// Global routing table
+FastLPM* routing_table = nullptr;
+
+void init() {
+    routing_table = new FastLPM();
+}
+
+void add_route(unsigned int ip, int prefix_length, int port_number) {
+    if (routing_table) {
+        routing_table->addRoute(ip, prefix_length, port_number);
+    }
+}
+
+int lookup_ip(unsigned int ip) {
+    return routing_table ? routing_table->lookupIP(ip) : -1;
+}
+
+void finalize_routes() {
+    // No specific finalization needed
+}
+
+void ip2human(unsigned int ip) {
+    unsigned int a, b, c, d;
+
+    a = (ip >> 24) & 0xff;
+    b = (ip >> 16) & 0xff;
+    c = (ip >>  8) & 0xff;
+    d =  ip        & 0xff;
+
+    printf("%i.%i.%i.%i\n", a, b, c, d);
+}

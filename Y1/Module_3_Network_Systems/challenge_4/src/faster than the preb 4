@@ -1,0 +1,177 @@
+/**
+* conservative_lpm.cpp
+ *
+ * Version: 2025-03-06
+ * Copyright: University of Twente, 2015-2025
+ *
+ **************************
+ *                          = Copyright notice =                          *
+ *                                                                        *
+ *            This file may  ONLY  be distributed UNMODIFIED              *
+ * In particular, a correct solution to the challenge must  NOT be posted *
+ * in public places, to preserve the learning effect for future students. *
+ **************************
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define DIRECT_BITS 16
+#define DIRECT_SIZE (1 << DIRECT_BITS)
+#define NODE_POOL_SIZE 1000000
+
+void ip2human(unsigned int ip);
+
+struct TrieNode {
+    int port;
+    struct TrieNode* children[2];
+};
+
+TrieNode node_pool[NODE_POOL_SIZE];
+int next_free_node = 0;
+
+TrieNode** direct_table = NULL;
+TrieNode* root = NULL;
+
+#define CACHE_SIZE 1024
+struct {
+    unsigned int ip;
+    int port;
+    char valid;
+} lookup_cache[CACHE_SIZE];
+
+TrieNode* create_node() {
+    if (next_free_node >= NODE_POOL_SIZE) {
+        fprintf(stderr, "Warning: Node pool exhausted, falling back to malloc\n");
+        TrieNode* node = (TrieNode*)malloc(sizeof(TrieNode));
+        if (!node) {
+            fprintf(stderr, "Error: Failed to allocate memory for node\n");
+            exit(1);
+        }
+        node->port = -1;
+        node->children[0] = NULL;
+        node->children[1] = NULL;
+        return node;
+    }
+
+    TrieNode* node = &node_pool[next_free_node++];
+    node->port = -1;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+
+    return node;
+}
+
+void init() {
+    next_free_node = 0;
+
+    direct_table = (TrieNode**)calloc(DIRECT_SIZE, sizeof(TrieNode*));
+    if (!direct_table) {
+        fprintf(stderr, "Failed to allocate direct table\n");
+        exit(1);
+    }
+
+    memset(lookup_cache, 0, sizeof(lookup_cache));
+
+    root = create_node();
+}
+
+void add_route(unsigned int ip, int prefix_length, int port_number) {
+    if (prefix_length <= DIRECT_BITS) {
+        unsigned int mask = 0xFFFFFFFF << (32 - prefix_length);
+        unsigned int prefix = ip & mask;
+        unsigned int start = prefix >> (32 - DIRECT_BITS);
+        unsigned int count = 1 << (DIRECT_BITS - prefix_length);
+
+        for (unsigned int i = 0; i < count; i++) {
+            unsigned int idx = start + i;
+            if (idx < DIRECT_SIZE) {
+                if (!direct_table[idx]) {
+                    direct_table[idx] = create_node();
+                }
+                if (direct_table[idx]) {
+                    direct_table[idx]->port = port_number;
+                }
+            }
+        }
+        return;
+    }
+
+    unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+    if (direct_index < DIRECT_SIZE) {
+        if (!direct_table[direct_index]) {
+            direct_table[direct_index] = create_node();
+        }
+
+        TrieNode* node = direct_table[direct_index];
+
+        for (int i = DIRECT_BITS; i < prefix_length && node; i++) {
+            int bit = (ip >> (31 - i)) & 1;
+
+            if (!node->children[bit]) {
+                node->children[bit] = create_node();
+            }
+
+            node = node->children[bit];
+        }
+
+        if (node) {
+            node->port = port_number;
+        }
+    }
+}
+
+void finalize_routes() {
+    memset(lookup_cache, 0, sizeof(lookup_cache));
+}
+
+int lookup_ip(unsigned int ip) {
+    unsigned int cache_idx = (ip >> 16) & (CACHE_SIZE - 1);
+    if (lookup_cache[cache_idx].valid && lookup_cache[cache_idx].ip == ip) {
+        return lookup_cache[cache_idx].port;
+    }
+
+    unsigned int direct_index = ip >> (32 - DIRECT_BITS);
+
+    if (direct_index < DIRECT_SIZE && direct_table[direct_index]) {
+        TrieNode* node = direct_table[direct_index];
+        int best_match = node->port;
+
+        unsigned int bits = ip << DIRECT_BITS;
+
+        for (int i = DIRECT_BITS; i < 32 && node; i++) {
+            if (node->port != -1) {
+                best_match = node->port;
+            }
+
+            int bit = (bits >> 31) & 1;
+            bits <<= 1;
+
+            node = node->children[bit];
+        }
+
+        if (node && node->port != -1) {
+            best_match = node->port;
+        }
+
+        lookup_cache[cache_idx].ip = ip;
+        lookup_cache[cache_idx].port = best_match;
+        lookup_cache[cache_idx].valid = 1;
+
+        return best_match;
+    }
+
+    return -1;
+}
+
+void ip2human(unsigned int ip) {
+     unsigned int a, b, c, d;
+
+     a = (ip >> 24) & 0xff;
+     b = (ip >> 16) & 0xff;
+     c = (ip >>  8) & 0xff;
+     d =  ip        & 0xff;
+
+     printf("%i.%i.%i.%i\n", a, b, c, d);
+}
