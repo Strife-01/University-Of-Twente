@@ -5,4 +5,4 @@
 ### Challenge 5 - Medium Access Control
 ### Challenge 6 - Reliable Data Transfer
 
-### Project (ScubaChat)[https://github.com/Strife-01/networking-project-chat-app] - Sound Waves Chatting App in C++
+### Project [ScubaChat](https://github.com/Strife-01/networking-project-chat-app) - Sound Waves Chatting App in C++
